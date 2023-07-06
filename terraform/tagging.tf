@@ -1,27 +1,27 @@
 locals {
-    environment_tags = [
-        "dev",
-        "test",
-        "qa",
-        "uat",
-        "staging",
-        "prod"
-    ]
+  environment_tags = [
+    "dev",
+    "test",
+    "qa",
+    "uat",
+    "staging",
+    "prod"
+  ]
 }
 
 resource "azurerm_policy_definition" "enforce_resource_group_tags" {
-    name         = "dicci_enforce_rg_tags"  
-    policy_type  = "Custom"
-    mode         = "All"
-    display_name = "Enforce Resource Group Tags"
+  name         = "dicci_enforce_rg_tags"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "Enforce Resource Group Tags"
 
-    lifecycle {
-        ignore_changes = [
-            metadata
-        ]
-    }
+  lifecycle {
+    ignore_changes = [
+      metadata
+    ]
+  }
 
-    parameters = <<PARAMETERS
+  parameters = <<PARAMETERS
     {
         "tagName": {
             "type": "String",
@@ -45,7 +45,7 @@ resource "azurerm_policy_definition" "enforce_resource_group_tags" {
     }
     PARAMETERS
 
-    policy_rule = <<POLICY_RULE
+  policy_rule = <<POLICY_RULE
     {
         "if": {
             "allOf": [
@@ -67,19 +67,19 @@ resource "azurerm_policy_definition" "enforce_resource_group_tags" {
 }
 
 resource "azurerm_policy_definition" "enforce_resource_tags" {
-    name         = "dicci_enforce_r_tags"
-    policy_type  = "Custom"
-    mode         = "Indexed"
-    display_name = "Enforce Resource Tags"
-    description  = "Policy to enforce that a specific tag exists for a resource.  Excludes metric alerts."
+  name         = "dicci_enforce_r_tags"
+  policy_type  = "Custom"
+  mode         = "Indexed"
+  display_name = "Enforce Resource Tags"
+  description  = "Policy to enforce that a specific tag exists for a resource.  Excludes metric alerts."
 
-    lifecycle {
-        ignore_changes = [
-            metadata
-        ]
-    }
+  lifecycle {
+    ignore_changes = [
+      metadata
+    ]
+  }
 
-    parameters = <<PARAMETERS
+  parameters = <<PARAMETERS
     {
         "tagName": {
             "type": "String",
@@ -103,7 +103,7 @@ resource "azurerm_policy_definition" "enforce_resource_tags" {
     }
     PARAMETERS
 
-    policy_rule = <<POLICY_RULE
+  policy_rule = <<POLICY_RULE
     {
         "if": {
             "anyOf": [
@@ -125,18 +125,18 @@ resource "azurerm_policy_definition" "enforce_resource_tags" {
 }
 
 resource "azurerm_policy_set_definition" "tagging_standards" {
-    name                  = "dicci_tagging_standards"
-    policy_type           = "Custom"
-    display_name          = "Tagging Standards"
-    description           = "Tagging Standards to be applied to the Azure environment."
+  name         = "dicci_tagging_standards"
+  policy_type  = "Custom"
+  display_name = "Tagging Standards"
+  description  = "Tagging Standards to be applied to the Azure environment."
 
-    lifecycle {
-        ignore_changes = [
-            metadata
-        ]
-    }
+  lifecycle {
+    ignore_changes = [
+      metadata
+    ]
+  }
 
-    parameters = <<PARAMETERS
+  parameters = <<PARAMETERS
     {
     "policy-effect":
         {
@@ -151,42 +151,42 @@ resource "azurerm_policy_set_definition" "tagging_standards" {
     }
     PARAMETERS
 
-    # Enforces the Environment tag on any resource group that is created.
-    policy_definition_reference {
-        policy_definition_id = azurerm_policy_definition.enforce_resource_group_tags.id
-        parameter_values = jsonencode({
-            policy-effect = {value = "[parameters('policy-effect')]"},
-            tagName = {value = "Environment"}
-        })
-    }
+  # Enforces the Environment tag on any resource group that is created.
+  policy_definition_reference {
+    policy_definition_id = azurerm_policy_definition.enforce_resource_group_tags.id
+    parameter_values = jsonencode({
+      policy-effect = { value = "[parameters('policy-effect')]" },
+      tagName       = { value = "Environment" }
+    })
+  }
 
-    # Enforces the Environment tag on any resource that is created.
-    policy_definition_reference {
-        policy_definition_id = azurerm_policy_definition.enforce_resource_tags.id
-        parameter_values = jsonencode({
-            policy-effect = {value = "[parameters('policy-effect')]"},
-            tagName = {value = "Environment"}
-        })
-    }
+  # Enforces the Environment tag on any resource that is created.
+  policy_definition_reference {
+    policy_definition_id = azurerm_policy_definition.enforce_resource_tags.id
+    parameter_values = jsonencode({
+      policy-effect = { value = "[parameters('policy-effect')]" },
+      tagName       = { value = "Environment" }
+    })
+  }
 
-    # Appends the Environment tag on a resource based on the parent resource group if one is not provided.
-    # policy_definition_reference {
-    #     policy_definition_id = azurerm_policy_definition.append_resource_group_tags.id
-    #     parameter_values = jsonencode({
-    #         tagName = {value = "Environment"}
-    #     })
-    # }
+  # Appends the Environment tag on a resource based on the parent resource group if one is not provided.
+  # policy_definition_reference {
+  #     policy_definition_id = azurerm_policy_definition.append_resource_group_tags.id
+  #     parameter_values = jsonencode({
+  #         tagName = {value = "Environment"}
+  #     })
+  # }
 }
 
-resource "azurerm_policy_assignment" "dicci_tagging_standards" {
-    name                 = "apa_tagging_standards"
-    scope                = data.azurerm_management_group.tenant_root.id
-    policy_definition_id = azurerm_policy_set_definition.tagging_standards.id
-    description          = ""
-    display_name         = "Example Tagging Standards"
-    location             = "eastus"
+resource "azurerm_subscription_policy_assignment" "dicci_tagging_standards" {
+  name                 = "dicci_tagging_standards"
+  policy_definition_id = azurerm_policy_set_definition.tagging_standards.id
+  subscription_id      = data.azurerm_client_config.current.subscription_id
+  description          = ""
+  display_name         = "Example Tagging Standards"
+  location             = "North Europe"
 
-    parameters = <<PARAMETERS
+  parameters = <<PARAMETERS
         {
             "policy-effect": {
                 "value": "deny"
@@ -194,7 +194,7 @@ resource "azurerm_policy_assignment" "dicci_tagging_standards" {
         }
     PARAMETERS
 
-    identity {
-        type          = "SystemAssigned"
-    }
+  identity {
+    type = "SystemAssigned"
+  }
 }
