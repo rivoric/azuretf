@@ -1,5 +1,5 @@
 data "azurerm_management_group" "tenant_root" {
-  name = var.tenant_id
+  name = data.azurerm_client_config.current.tenant_id
 }
 
 resource "azurerm_policy_definition" "enforce_resource_group_tags" {
