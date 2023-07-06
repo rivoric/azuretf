@@ -57,7 +57,6 @@ resource "azurerm_policy_definition" "enforce_resource_group_tags" {
 
 resource "azurerm_policy_definition" "enforce_resource_tags" {
     name         = "dicci_enforce_r_tags"
-    management_group_name = data.azurerm_management_group.tenant_root.name
     policy_type  = "Custom"
     mode         = "Indexed"
     display_name = "Enforce Resource Tags"
