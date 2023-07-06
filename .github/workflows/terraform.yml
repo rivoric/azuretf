@@ -27,4 +27,16 @@ jobs:
 
     - name: 'Terraform Init'
       id: init
-      run: terraform init
+      run: terraform init -chdir=terraform
+
+    - name: 'Terraform validate'
+      id: validate
+      run: terraform validate -chdir=terraform
+
+    - name: 'Terraform plan'
+      id: plan
+      run: terraform plan -chdir=terraform -out=tfplan
+
+    - name: 'Terraform apply'
+      id: apply
+      run: terraform apply -chdir=terraform tfplan
