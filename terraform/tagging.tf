@@ -178,23 +178,23 @@ resource "azurerm_policy_set_definition" "tagging_standards" {
   # }
 }
 
-resource "azurerm_subscription_policy_assignment" "dicci_tagging_standards" {
-  name                 = "dicci_tagging_standards"
-  policy_definition_id = azurerm_policy_set_definition.tagging_standards.id
-  subscription_id      = data.azurerm_client_config.current.subscription_id
-  description          = ""
-  display_name         = "Example Tagging Standards"
-  location             = "North Europe"
+# resource "azurerm_subscription_policy_assignment" "dicci_tagging_standards" {
+#   name                 = "dicci_tagging_standards"
+#   policy_definition_id = azurerm_policy_set_definition.tagging_standards.id
+#   subscription_id      = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
+#   description          = ""
+#   display_name         = "Example Tagging Standards"
+#   location             = "North Europe"
 
-  parameters = <<PARAMETERS
-        {
-            "policy-effect": {
-                "value": "deny"
-            }
-        }
-    PARAMETERS
+#   parameters = <<PARAMETERS
+#         {
+#             "policy-effect": {
+#                 "value": "deny"
+#             }
+#         }
+#     PARAMETERS
 
-  identity {
-    type = "SystemAssigned"
-  }
-}
+#   identity {
+#     type = "SystemAssigned"
+#   }
+# }
