@@ -1,10 +1,5 @@
-data "azurerm_management_group" "tenant_root" {
-  name = data.azurerm_client_config.current.tenant_id
-}
-
 resource "azurerm_policy_definition" "enforce_resource_group_tags" {
     name         = "dicci_enforce_rg_tags"  
-    management_group_name = data.azurerm_management_group.tenant_root.name
     policy_type  = "Custom"
     mode         = "All"
     display_name = "Enforce Resource Group Tags"
