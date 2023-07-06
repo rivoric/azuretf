@@ -128,7 +128,6 @@ resource "azurerm_policy_set_definition" "tagging_standards" {
     name                  = "dicci_tagging_standards"
     policy_type           = "Custom"
     display_name          = "Tagging Standards"
-    management_group_name = data.azurerm_management_group.tenant_root.name
     description           = "Tagging Standards to be applied to the Azure environment."
 
     lifecycle {
@@ -179,29 +178,23 @@ resource "azurerm_policy_set_definition" "tagging_standards" {
     # }
 }
 
-# resource "azurerm_policy_assignment" "dicci_tagging_standards" {
-#     name                 = "apa_tagging_standards"
-#     scope                = data.azurerm_management_group.tenant_root.id
-#     policy_definition_id = azurerm_policy_set_definition.tagging_standards.id
-#     description          = ""
-#     display_name         = "Example Tagging Standards"
-#     location             = "eastus"
+resource "azurerm_policy_assignment" "dicci_tagging_standards" {
+    name                 = "apa_tagging_standards"
+    scope                = data.azurerm_management_group.tenant_root.id
+    policy_definition_id = azurerm_policy_set_definition.tagging_standards.id
+    description          = ""
+    display_name         = "Example Tagging Standards"
+    location             = "eastus"
 
-#     parameters = <<PARAMETERS
-#         {
-#             "policy-effect": {
-#                 "value": "deny"
-#             }
-#         }
-#     PARAMETERS
+    parameters = <<PARAMETERS
+        {
+            "policy-effect": {
+                "value": "deny"
+            }
+        }
+    PARAMETERS
 
-#     identity {
-#         type          = "SystemAssigned"
-#     }
-# }
-
-# resource "azurerm_role_assignment" "apa_tagging_standards" {
-#     scope                 = "/providers/Microsoft.Management/managementGroups/${data.azurerm_management_group.tenant_root.name}"
-#     role_definition_name  = "Contributor"
-#     principal_id          = azurerm_policy_assignment.apa_tagging_standards.identity[0].principal_id
-# }
+    identity {
+        type          = "SystemAssigned"
+    }
+}
