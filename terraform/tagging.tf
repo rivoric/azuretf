@@ -181,7 +181,7 @@ resource "azurerm_subscription_policy_assignment" "dicci_tagging_standards" {
   parameters = <<PARAMETERS
         {
             "policy-effect": {
-                "value": "deny"
+                "value": "audit"
             }
         }
     PARAMETERS
