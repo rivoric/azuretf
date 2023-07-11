@@ -102,11 +102,11 @@ resource "azurerm_policy_definition" "enforce_resource_tags" {
         "if": {
             "anyOf": [
                 {
-                    "field": "[concat('tags[', parameters('Environment'), ']')]",
+                    "field": "tags[Environment]",
                     "exists": "false"
                 },
                 {
-                    "field": "[concat('tags[', parameters('Owner'), ']')]",
+                    "field": "tags[Owner]",
                     "exists": "false"
                 }
             ]
@@ -146,12 +146,12 @@ resource "azurerm_policy_set_definition" "tagging_standards" {
     PARAMETERS
 
   # Enforces the Environment tag on any resource group that is created.
-  policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
-    parameter_values = jsonencode({
-      tagName       = { value = "Environment" }
-    })
-  }
+  # policy_definition_reference {
+  #   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
+  #   parameter_values = jsonencode({
+  #     tagName       = { value = "Environment" }
+  #   })
+  # }
 
   # Enforces the Environment tag on any resource that is created.
   policy_definition_reference {
